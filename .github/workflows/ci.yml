@@ -29,12 +29,34 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Lint commit messages
+      - name: Commit messages (pull request)
         if: github.event_name == 'pull_request'
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: pnpm exec commitlint --from "$BASE_SHA" --to "$HEAD_SHA" --verbose
 
-      - name: Format, lint, types, colocated tests, circular deps, tests + coverage, package
-        run: pnpm check
+      - name: Commit messages (push)
+        if: github.event_name == 'push'
+        run: pnpm exec commitlint --last --verbose
+
+      - name: Format
+        run: pnpm format:check
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Types
+        run: pnpm typecheck
+
+      - name: Colocated tests
+        run: pnpm test:colocated
+
+      - name: Circular dependencies
+        run: pnpm test:circular
+
+      - name: Tests + 100% coverage
+        run: pnpm test
+
+      - name: Build + package lint
+        run: pnpm lint:package
