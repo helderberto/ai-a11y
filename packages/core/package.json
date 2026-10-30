@@ -1,0 +1,37 @@
+{
+  "name": "@ai-a11y/core",
+  "version": "0.0.0",
+  "description": "Framework-agnostic core of ai-a11y: AI chat answers that screen readers can follow.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Helder Berto",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/helderberto/ai-a11y.git",
+    "directory": "packages/core"
+  },
+  "keywords": [
+    "accessibility",
+    "a11y",
+    "aria-live",
+    "screen-reader",
+    "ai",
+    "llm",
+    "streaming",
+    "chat"
+  ],
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "vite build",
+    "typecheck": "tsc --noEmit"
+  }
+}
