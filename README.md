@@ -4,25 +4,44 @@ AI chat answers that screen readers can follow.
 
 > Status: early development. The API may change before 1.0.
 
+## Context
+
+AI chats are now part of most apps: support, search, docs, coding tools.
+
+They show answers as they are written, word by word. This is called streaming. It makes the app feel fast.
+
+Laws also changed. The [European Accessibility Act](https://ec.europa.eu/social/main.jsp?catId=1202) applies since June 2025. Apps must work for people with disabilities.
+
 ## The problem
 
-AI chats stream answers word by word. Sighted users watch the text appear. Screen reader users get one of two things:
+Blind people use screen readers: software that reads the screen out loud.
 
-**Noise.** The screen reader restarts on every new word:
+AI chats write answers word by word. Screen readers don't handle that well:
 
-> "The" … "The best" … "The best way" … "The best way to" …
+- **They repeat.** Every new word restarts the reading: "The" … "The best" … "The best way" …
+- **Or they stay silent.** The user never hears the answer, or doesn't know it finished.
 
-**Silence.** Nothing is announced. They don't know an answer is coming, when it ends, or if it failed.
+So for screen reader users, most AI chats are broken.
 
-The fix depends on each screen reader's quirks. Most teams don't have time to test NVDA, JAWS, VoiceOver, and TalkBack, so most AI chats ship broken.
+## Motivation
+
+Everyone should be able to use your AI chat, including people who can't see the screen.
+
+Today that is hard to get right:
+
+- **No library exists.** Each team solves it alone, or doesn't.
+- **Screen readers behave differently.** A fix that works in VoiceOver can fail in NVDA or JAWS.
+- **Testing takes time.** Few teams test with real screen readers.
+
+ai-a11y solves it once, so every team can reuse it. Testing on real screen readers is on the [roadmap](#roadmap).
 
 ## The fix
 
-ai-a11y announces the answer one sentence at a time, with a clear start and end:
+ai-a11y reads the answer one sentence at a time, and says when it starts and ends:
 
 > "Generating response." → "The best way to center a div is flexbox." → "Response complete."
 
-Your visible answer stays as it is. A hidden live region does the talking.
+Your chat looks the same. Only what the screen reader hears changes.
 
 ## How it works
 
@@ -33,30 +52,40 @@ sequenceDiagram
     participant R as Hidden live region
     participant SR as Screen reader
 
+    App->>A: mount()
+    A->>R: adds hidden region to the page
     App->>A: start()
     A->>R: "Generating response"
-    R-->>SR: announces
+    R-->>SR: reads it
     loop each streamed chunk
         App->>A: push(chunk)
-        A->>A: buffer until a sentence is complete
-        A->>R: full sentence
-        R-->>SR: announces
+        A->>A: waits for a full sentence
+        A->>R: the sentence
+        R-->>SR: reads it
     end
     App->>A: end()
     A->>R: last sentence + "Response complete"
-    R-->>SR: announces
+    R-->>SR: reads it
 ```
+
+## Packages
+
+| Package          | For                                |
+| ---------------- | ---------------------------------- |
+| `@ai-a11y/core`  | Any framework, or plain JavaScript |
+| `@ai-a11y/react` | React (coming soon)                |
 
 ## Usage
 
 ```sh
-npm install ai-a11y
+pnpm add @ai-a11y/core
 ```
 
 ```ts
-import { createAnnouncer } from "ai-a11y";
+import { createAnnouncer } from "@ai-a11y/core";
 
 const announcer = createAnnouncer();
+const unmount = announcer.mount();
 
 announcer.start();
 for await (const chunk of stream) {
@@ -65,6 +94,8 @@ for await (const chunk of stream) {
 }
 announcer.end();
 ```
+
+Call `unmount()` when the chat goes away.
 
 ### Options
 
@@ -80,22 +111,34 @@ createAnnouncer({
 
 Sentences are split with `Intl.Segmenter`, so any language works.
 
+### State
+
+```ts
+announcer.getState(); // { status: "idle" | "streaming" | "complete", announcement }
+const unsubscribe = announcer.subscribe((state) => console.log(state));
+```
+
+Framework adapters use this to stay in sync.
+
 ## Roadmap
 
 - Rate limiting for fast streams
 - Stop, error, and code block announcements
-- Adapters: React, Vercel AI SDK, web component
+- Adapters: React, Svelte, Vercel AI SDK, web component
 - Screen reader support matrix
 
 ## Contributing
 
-Commits follow [Conventional Commits](https://www.conventionalcommits.org/). Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Changes are logged in [CHANGELOG.md](./CHANGELOG.md).
+Requires [asdf](https://asdf-vm.com/) (see `.tool-versions`) and pnpm.
 
 ```sh
-npm install
-npm run check
+asdf install
+pnpm install
+pnpm check
 ```
+
+Commits follow [Conventional Commits](https://www.conventionalcommits.org/). Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Changes are logged in [CHANGELOG.md](./CHANGELOG.md).
 
 ## License
 
-MIT
+[MIT](./LICENSE) © Helder Berto
