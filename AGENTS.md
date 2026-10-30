@@ -34,4 +34,5 @@
 
 - Pre-releases: `X.Y.Z-beta.N`, published with `pnpm publish --tag beta`. Stable: `pnpm publish`.
 - Before releasing: move `## [Unreleased]` items to `## [X.Y.Z] - YYYY-MM-DD`, update compare links, commit `chore(release): X.Y.Z`, tag `vX.Y.Z`.
+- After pushing the tag, create a GitHub release with the CHANGELOG section as notes: `gh release create vX.Y.Z --notes-file <notes>`. Add `--prerelease` for betas.
 - `prepublishOnly` runs `pnpm check`, so nothing ships without passing the gates.
