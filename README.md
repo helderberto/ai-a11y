@@ -43,6 +43,23 @@ ai-a11y reads the answer one sentence at a time, and says when it starts and end
 
 Your chat looks the same. Only what the screen reader hears changes.
 
+## Why not build it yourself?
+
+Getting this right takes more than an `aria-live` attribute. ai-a11y handles:
+
+| What                                                                           | Status  |
+| ------------------------------------------------------------------------------ | ------- |
+| Keep the visible answer out of the live region, so it doesn't flood the reader | Done    |
+| Add the hidden region before the first message, since late regions get ignored | Done    |
+| Wait for full sentences, in any language                                       | Done    |
+| Work with server rendering and React StrictMode                                | Done    |
+| Slow down when text arrives too fast                                           | Planned |
+| Repeat a message that is the same as the last one                              | Planned |
+| Announce stop, error, and code blocks                                          | Planned |
+| Test on NVDA, JAWS, VoiceOver, and TalkBack                                    | Planned |
+
+Most teams don't know these issues exist. Sighted engineers never hear them.
+
 ## How it works
 
 ```mermaid
