@@ -73,7 +73,7 @@ sequenceDiagram
 | Package          | For                                |
 | ---------------- | ---------------------------------- |
 | `@ai-a11y/core`  | Any framework, or plain JavaScript |
-| `@ai-a11y/react` | React (coming soon)                |
+| `@ai-a11y/react` | React 18+                          |
 
 ## Usage
 
@@ -96,6 +96,31 @@ announcer.end();
 ```
 
 Call `unmount()` when the chat goes away.
+
+### React
+
+```sh
+pnpm add @ai-a11y/react
+```
+
+```tsx
+import { useAnnouncer } from "@ai-a11y/react";
+
+function Chat() {
+  const announcer = useAnnouncer();
+
+  async function ask(question: string) {
+    announcer.start();
+    for await (const chunk of streamAnswer(question)) {
+      announcer.push(chunk);
+    }
+    announcer.end();
+  }
+  // render your chat as usual
+}
+```
+
+The hook adds the hidden region on mount and removes it on unmount. It also returns `status` and `announcement`.
 
 ### Options
 
@@ -124,7 +149,7 @@ Framework adapters use this to stay in sync.
 
 - Rate limiting for fast streams
 - Stop, error, and code block announcements
-- Adapters: React, Svelte, Vercel AI SDK, web component
+- Adapters: Svelte, Vercel AI SDK, web component
 - Screen reader support matrix
 
 ## Contributing
