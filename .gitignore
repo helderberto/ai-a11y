@@ -1,3 +1,30 @@
+# Dependencies
 node_modules
+
+# Build and test output
 dist
 coverage
+*.tsbuildinfo
+*.tgz
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Env
+.env
+.env.*
+!.env.example
+
+# OS and editors
+.DS_Store
+Thumbs.db
+.idea
+.vscode/*
+!.vscode/extensions.json
+*.swp
+
+# Tool caches
+.eslintcache
+.vite
