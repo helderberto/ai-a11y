@@ -1,5 +1,5 @@
 {
-  "name": "@ai-a11y/react",
+  "name": "ai-a11y-react",
   "version": "0.0.0",
   "description": "React adapter for ai-a11y: AI chat answers that screen readers can follow.",
   "type": "module",
@@ -36,7 +36,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@ai-a11y/core": "workspace:*"
+    "ai-a11y": "workspace:*"
   },
   "peerDependencies": {
     "react": ">=18"

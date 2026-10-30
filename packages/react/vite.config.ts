@@ -14,7 +14,7 @@ export default defineConfig({
   build: {
     lib: { entry: entries, formats: ["es"] },
     rolldownOptions: {
-      external: ["react", "@ai-a11y/core"],
+      external: ["react", "ai-a11y"],
     },
   },
   test: {

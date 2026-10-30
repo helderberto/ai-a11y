@@ -213,7 +213,7 @@ importers:
 
   packages/react:
     dependencies:
-      '@ai-a11y/core':
+      ai-a11y:
         specifier: workspace:*
         version: link:../core
     devDependencies:

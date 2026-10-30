@@ -5,4 +5,4 @@ export type {
   AnnouncerState,
   AnnouncerStatus,
   Messages,
-} from "@ai-a11y/core";
+} from "ai-a11y";

@@ -87,19 +87,19 @@ sequenceDiagram
 
 ## Packages
 
-| Package          | For                                |
-| ---------------- | ---------------------------------- |
-| `@ai-a11y/core`  | Any framework, or plain JavaScript |
-| `@ai-a11y/react` | React 18+                          |
+| Package         | For                                |
+| --------------- | ---------------------------------- |
+| `ai-a11y`       | Any framework, or plain JavaScript |
+| `ai-a11y-react` | React 18+                          |
 
 ## Usage
 
 ```sh
-pnpm add @ai-a11y/core
+pnpm add ai-a11y
 ```
 
 ```ts
-import { createAnnouncer } from "@ai-a11y/core";
+import { createAnnouncer } from "ai-a11y";
 
 const announcer = createAnnouncer();
 const unmount = announcer.mount();
@@ -117,11 +117,11 @@ Call `unmount()` when the chat goes away.
 ### React
 
 ```sh
-pnpm add @ai-a11y/react
+pnpm add ai-a11y-react
 ```
 
 ```tsx
-import { useAnnouncer } from "@ai-a11y/react";
+import { useAnnouncer } from "ai-a11y-react";
 
 function Chat() {
   const announcer = useAnnouncer();

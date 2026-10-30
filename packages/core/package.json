@@ -1,5 +1,5 @@
 {
-  "name": "@ai-a11y/core",
+  "name": "ai-a11y",
   "version": "0.0.0",
   "description": "Framework-agnostic core of ai-a11y: AI chat answers that screen readers can follow.",
   "type": "module",
