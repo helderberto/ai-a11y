@@ -58,7 +58,9 @@ export function createAnnouncer(options: AnnouncerOptions = {}): Announcer {
     if (region) {
       region.textContent = announcement;
     }
-    listeners.forEach((listener) => listener(state));
+    listeners.forEach((listener) => {
+      listener(state);
+    });
   };
 
   return {

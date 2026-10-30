@@ -3,7 +3,7 @@ import {
   type Announcer,
   type AnnouncerOptions,
   type AnnouncerState,
-} from "ai-a11y";
+} from "@/core";
 import { useEffect, useState, useSyncExternalStore } from "react";
 
 export type UseAnnouncerResult = AnnouncerState &

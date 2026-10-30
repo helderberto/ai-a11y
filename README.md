@@ -85,12 +85,14 @@ sequenceDiagram
     R-->>SR: reads it
 ```
 
-## Packages
+## Imports
 
-| Package         | For                                |
+| Import          | For                                |
 | --------------- | ---------------------------------- |
 | `ai-a11y`       | Any framework, or plain JavaScript |
-| `ai-a11y-react` | React 18+                          |
+| `ai-a11y/react` | React 18+                          |
+
+One package. Import only what you use: unused code is tree-shaken away, and React is an optional peer dependency.
 
 ## Usage
 
@@ -117,11 +119,11 @@ Call `unmount()` when the chat goes away.
 ### React
 
 ```sh
-pnpm add ai-a11y-react
+pnpm add ai-a11y
 ```
 
 ```tsx
-import { useAnnouncer } from "ai-a11y-react";
+import { useAnnouncer } from "ai-a11y/react";
 
 function Chat() {
   const announcer = useAnnouncer();

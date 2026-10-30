@@ -1,4 +1,4 @@
-import { createAnnouncer } from "@/core/announcer";
+import { createAnnouncer } from "./announcer";
 
 const regions = () => document.querySelectorAll('[aria-live="polite"]');
 const region = () =>
@@ -9,10 +9,6 @@ const mounted = () => {
   announcer.mount();
   return announcer;
 };
-
-afterEach(() => {
-  document.body.innerHTML = "";
-});
 
 describe("lifecycle", () => {
   test("does not touch the DOM before mount", () => {
@@ -54,6 +50,18 @@ describe("lifecycle", () => {
 
     expect(announcer.getState().status).toBe("streaming");
   });
+
+  test("cleaning up an older mount keeps the newer region", () => {
+    const announcer = createAnnouncer();
+    const cleanupFirst = announcer.mount();
+    announcer.mount();
+
+    cleanupFirst();
+    announcer.start();
+
+    expect(regions()).toHaveLength(1);
+    expect(region()?.textContent).toBe("Generating response");
+  });
 });
 
 describe("announcements", () => {
@@ -70,6 +78,15 @@ describe("announcements", () => {
     announcer.start();
 
     announcer.push("The best way");
+
+    expect(region()?.textContent).toBe("Generating response");
+  });
+
+  test("ignores an empty chunk", () => {
+    const announcer = mounted();
+    announcer.start();
+
+    announcer.push("");
 
     expect(region()?.textContent).toBe("Generating response");
   });

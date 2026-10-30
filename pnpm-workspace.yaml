@@ -1,7 +1,3 @@
-packages:
-  - packages/*
-
 minimumReleaseAgeExclude:
   - eslint@10.14.0
-
 savePrefix: ""

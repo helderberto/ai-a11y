@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { StrictMode } from "react";
-import { useAnnouncer } from "@/use-announcer";
+import { useAnnouncer } from "./use-announcer";
 
 const regions = () => document.querySelectorAll('[aria-live="polite"]');
 const region = () =>

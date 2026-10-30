@@ -1,4 +1,4 @@
-export { createAnnouncer } from "@/core/announcer";
+export { createAnnouncer } from "./announcer";
 export type {
   Announcer,
   AnnouncerOptions,
@@ -6,4 +6,4 @@ export type {
   AnnouncerStatus,
   Listener,
   Messages,
-} from "@/core/announcer";
+} from "./announcer";
