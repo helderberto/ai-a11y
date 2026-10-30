@@ -29,3 +29,9 @@
 - Versions: [SemVer 2.0.0](https://semver.org/spec/v2.0.0.html).
 - Changelog: [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/). Update `## [Unreleased]` with every user-facing change.
 - Exact dependency versions (`.npmrc` `save-prefix=""`).
+
+## Releases
+
+- Pre-releases: `X.Y.Z-beta.N`, published with `pnpm publish --tag beta`. Stable: `pnpm publish`.
+- Before releasing: move `## [Unreleased]` items to `## [X.Y.Z] - YYYY-MM-DD`, update compare links, commit `chore(release): X.Y.Z`, tag `vX.Y.Z`.
+- `prepublishOnly` runs `pnpm check`, so nothing ships without passing the gates.

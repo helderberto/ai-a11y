@@ -1,6 +1,6 @@
 {
   "name": "ai-a11y",
-  "version": "0.0.0",
+  "version": "0.1.0-beta.0",
   "description": "AI chat answers that screen readers can follow.",
   "type": "module",
   "license": "MIT",
@@ -50,7 +50,8 @@
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
     "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test:colocated && pnpm test:circular && pnpm test && pnpm lint:package",
-    "prepare": "husky"
+    "prepare": "husky",
+    "prepublishOnly": "pnpm check"
   },
   "peerDependencies": {
     "react": ">=18"
