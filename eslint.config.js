@@ -16,5 +16,17 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    files: ["src/**"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "ExportDefaultDeclaration",
+          message: "Use named exports.",
+        },
+      ],
+    },
+  },
   prettier,
 );
