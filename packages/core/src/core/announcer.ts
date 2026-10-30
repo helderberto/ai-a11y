@@ -8,11 +8,22 @@ export type AnnouncerOptions = {
   messages?: Partial<Messages>;
 };
 
+export type AnnouncerStatus = "idle" | "streaming" | "complete";
+
+export type AnnouncerState = {
+  status: AnnouncerStatus;
+  announcement: string;
+};
+
+export type Listener = (state: AnnouncerState) => void;
+
 export type Announcer = {
+  mount: () => () => void;
   start: () => void;
   push: (chunk: string) => void;
   end: () => void;
-  destroy: () => void;
+  getState: () => AnnouncerState;
+  subscribe: (listener: Listener) => () => void;
 };
 
 const defaultMessages: Messages = {
@@ -37,17 +48,33 @@ export function createAnnouncer(options: AnnouncerOptions = {}): Announcer {
   const segmenter = new Intl.Segmenter(options.locale, {
     granularity: "sentence",
   });
-  const region = createRegion();
+  const listeners = new Set<Listener>();
+  let state: AnnouncerState = { status: "idle", announcement: "" };
+  let region: HTMLElement | undefined;
   let buffer = "";
 
-  const say = (text: string) => {
-    region.textContent = text;
+  const say = (status: AnnouncerStatus, announcement: string) => {
+    state = { status, announcement };
+    if (region) {
+      region.textContent = announcement;
+    }
+    listeners.forEach((listener) => listener(state));
   };
 
   return {
+    mount: () => {
+      const mountedRegion = createRegion();
+      region = mountedRegion;
+      return () => {
+        mountedRegion.remove();
+        if (region === mountedRegion) {
+          region = undefined;
+        }
+      };
+    },
     start: () => {
       buffer = "";
-      say(messages.start);
+      say("streaming", messages.start);
     },
     push: (chunk) => {
       buffer += chunk;
@@ -55,17 +82,24 @@ export function createAnnouncer(options: AnnouncerOptions = {}): Announcer {
       const pending = sentences.pop() ?? "";
       const complete = sentences.join("").trim();
       if (complete) {
-        say(complete);
         buffer = pending;
+        say("streaming", complete);
       }
     },
     end: () => {
       const rest = buffer.trim();
       buffer = "";
-      say(rest ? `${rest} ${messages.complete}` : messages.complete);
+      say(
+        "complete",
+        rest ? `${rest} ${messages.complete}` : messages.complete,
+      );
     },
-    destroy: () => {
-      region.remove();
+    getState: () => state,
+    subscribe: (listener) => {
+      listeners.add(listener);
+      return () => {
+        listeners.delete(listener);
+      };
     },
   };
 }

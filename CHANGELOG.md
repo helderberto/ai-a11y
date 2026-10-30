@@ -9,4 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Core announcer: hidden polite live region, sentence-by-sentence announcements, start and complete messages.
+- `@ai-a11y/core`: announces streamed AI answers one sentence at a time, with start and complete messages.
+- `mount()` adds the hidden live region and returns a cleanup, so the core is safe with server rendering.
+- `getState()` and `subscribe()` so framework adapters can stay in sync.

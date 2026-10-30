@@ -1,59 +1,159 @@
 import { createAnnouncer } from "@/core/announcer";
 
+const regions = () => document.querySelectorAll('[aria-live="polite"]');
 const region = () =>
   document.querySelector<HTMLElement>('[aria-live="polite"]');
+
+const mounted = () => {
+  const announcer = createAnnouncer();
+  announcer.mount();
+  return announcer;
+};
 
 afterEach(() => {
   document.body.innerHTML = "";
 });
 
-test("adds one hidden polite live region on create", () => {
-  createAnnouncer();
+describe("lifecycle", () => {
+  test("does not touch the DOM before mount", () => {
+    createAnnouncer();
 
-  expect(document.querySelectorAll('[aria-live="polite"]')).toHaveLength(1);
+    expect(regions()).toHaveLength(0);
+  });
+
+  test("mount adds one hidden polite live region", () => {
+    mounted();
+
+    expect(regions()).toHaveLength(1);
+  });
+
+  test("mount cleanup removes the live region", () => {
+    const announcer = createAnnouncer();
+    const cleanup = announcer.mount();
+
+    cleanup();
+
+    expect(regions()).toHaveLength(0);
+  });
+
+  test("survives mount, cleanup, mount (React StrictMode)", () => {
+    const announcer = createAnnouncer();
+    announcer.mount()();
+    announcer.mount();
+
+    announcer.start();
+
+    expect(regions()).toHaveLength(1);
+    expect(region()?.textContent).toBe("Generating response");
+  });
+
+  test("start before mount updates state without throwing", () => {
+    const announcer = createAnnouncer();
+
+    announcer.start();
+
+    expect(announcer.getState().status).toBe("streaming");
+  });
 });
 
-test("announces start", () => {
-  const a = createAnnouncer();
+describe("announcements", () => {
+  test("announces start", () => {
+    const announcer = mounted();
 
-  a.start();
+    announcer.start();
 
-  expect(region()?.textContent).toBe("Generating response");
+    expect(region()?.textContent).toBe("Generating response");
+  });
+
+  test("does not announce an incomplete sentence", () => {
+    const announcer = mounted();
+    announcer.start();
+
+    announcer.push("The best way");
+
+    expect(region()?.textContent).toBe("Generating response");
+  });
+
+  test("announces a sentence once it is complete", () => {
+    const announcer = mounted();
+    announcer.start();
+
+    announcer.push("The best way is ");
+    announcer.push("flexbox. Set");
+
+    expect(region()?.textContent).toBe("The best way is flexbox.");
+  });
+
+  test("end flushes the last sentence then announces complete", () => {
+    const announcer = mounted();
+    announcer.start();
+    announcer.push("Use flexbox");
+
+    announcer.end();
+
+    expect(region()?.textContent).toBe("Use flexbox Response complete");
+  });
+
+  test("uses custom messages", () => {
+    const announcer = createAnnouncer({
+      messages: { start: "Gerando resposta" },
+    });
+    announcer.mount();
+
+    announcer.start();
+
+    expect(region()?.textContent).toBe("Gerando resposta");
+  });
 });
 
-test("does not announce an incomplete sentence", () => {
-  const a = createAnnouncer();
-  a.start();
+describe("state", () => {
+  test("starts idle", () => {
+    const announcer = createAnnouncer();
 
-  a.push("The best way");
+    expect(announcer.getState()).toEqual({ status: "idle", announcement: "" });
+  });
 
-  expect(region()?.textContent).toBe("Generating response");
-});
+  test("tracks status and last announcement", () => {
+    const announcer = createAnnouncer();
 
-test("announces a sentence once it is complete", () => {
-  const a = createAnnouncer();
-  a.start();
+    announcer.start();
+    announcer.push("Hi. ");
+    announcer.push("Bye");
+    announcer.end();
 
-  a.push("The best way is ");
-  a.push("flexbox. Set");
+    expect(announcer.getState()).toEqual({
+      status: "complete",
+      announcement: "Bye Response complete",
+    });
+  });
 
-  expect(region()?.textContent).toBe("The best way is flexbox.");
-});
+  test("notifies subscribers on change", () => {
+    const announcer = createAnnouncer();
+    const listener = vi.fn();
+    announcer.subscribe(listener);
 
-test("end flushes the last sentence then announces complete", () => {
-  const a = createAnnouncer();
-  a.start();
-  a.push("Use flexbox");
+    announcer.start();
 
-  a.end();
+    expect(listener).toHaveBeenCalledWith({
+      status: "streaming",
+      announcement: "Generating response",
+    });
+  });
 
-  expect(region()?.textContent).toBe("Use flexbox Response complete");
-});
+  test("unsubscribe stops notifications", () => {
+    const announcer = createAnnouncer();
+    const listener = vi.fn();
+    const unsubscribe = announcer.subscribe(listener);
 
-test("destroy removes the live region", () => {
-  const a = createAnnouncer();
+    unsubscribe();
+    announcer.start();
 
-  a.destroy();
+    expect(listener).not.toHaveBeenCalled();
+  });
 
-  expect(region()).toBeNull();
+  test("getState returns the same object until state changes", () => {
+    const announcer = createAnnouncer();
+
+    expect(announcer.getState()).toBe(announcer.getState());
+  });
 });
